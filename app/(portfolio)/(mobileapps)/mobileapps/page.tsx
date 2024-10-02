@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import { gsap } from 'gsap';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import 'swiper/swiper-bundle.css';
 import SwiperCore from 'swiper';
@@ -31,8 +31,19 @@ const archivo = Archivo({
 export default function Mobileapps() {
   const swiperRef = useRef<SwiperCore | null>(null);
   const interleaveOffset = 0.8; // Adjust this value as needed
-
+  const [entries, setEntries] = useState([]);
   useEffect(() => {
+    const fetchEntries = async () => {
+      try {
+          const response = await fetch('http://localhost:8000/api/entries');
+          const data = await response.json();
+          setEntries(data);
+      } catch (error) {
+          console.error('Error fetching entries:', error);
+      }
+  };
+
+  fetchEntries();
     csimages();
 
     const handleProgress = () => {
@@ -159,21 +170,19 @@ export default function Mobileapps() {
               </div>
             </div>
           </SwiperSlide> */}
+          {entries.map((entry, index) => (
           <SwiperSlide className=" swiper-slide bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#E5E5E5] via-[#FE9900] to-[#FE4B10] flex items-center justify-center">
             <div className="grid grid-cols-12 slide-inner ">
               <div className="flex order-2 h-full col-span-12 lg:col-span-5 protitle lg:order-1">
                 <div className="flex flex-col items-start titlendis">
                   <div className="titledisplay">
                     <text className="target-text text-left text-white  2xl:text-[6.4rem] xl:text-[4.5rem]  text-5xl">
-                      <AnimatedText2 text="YALAXI" />
+                      <AnimatedText2 text={entry.name} />
                     </text>
                   </div>
                   <div className={archivo.className}>
                     <span className="  text-xl w-2/3 text-left overflow-hidden text-white h-[85px]">
-                      In Ticino we offer you state-of-the-art skin patches and
-                      prostheses to forget about baldness, receding hairline and
-                      thinning – without ever having to take them off, not even
-                      for washing and playing sports!
+                    {entry.description}
                     </span>
                   </div>
                   <Link href={'/yalaxi'} className="mt-8 ">
@@ -210,6 +219,7 @@ export default function Mobileapps() {
               </div>
             </div>
           </SwiperSlide>
+          ))}
           <SwiperSlide className=" swiper-slide bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#fff] via-[#20B4E3] to-[#263C51] flex items-center justify-center">
             <div className="grid grid-cols-12 slide-inner ">
               <div className="flex order-2 h-full col-span-12 lg:col-span-5 protitle lg:order-1">
